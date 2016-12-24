@@ -6,7 +6,7 @@ const path = require('path');
 const express = require('express');
 const socketIO = require('socket.io');
 
-const {generateMessage} = require('./utils/message');
+const {generateMessage,  generateLocationMessage} = require('./utils/message');
 
 const port = process.env.PORT;
 const publicPath = path.join(__dirname + '/../public');
@@ -20,7 +20,6 @@ app.use(express.static(publicPath));
 // connection is triggered when new user connects to the server
 io.on('connection', (socket) => {
   console.log('New user connected');
-
   socket.emit('newMessage', generateMessage('Admin','Welcome to the chat app'));
   socket.broadcast.emit('newMessage', generateMessage('Admin','New user joined'));
 
@@ -34,6 +33,10 @@ io.on('connection', (socket) => {
     //   text: message.text,
     //   createdAt: new Date().getTime()
     // });
+  });
+
+  socket.on('createLocationMessage', (coords) => {
+    io.emit('newLocationMessage', generateLocationMessage('Admin: ',coords.latitude, coords.longitude));
   });
 
   socket.on('disconnect', () => {
