@@ -27,7 +27,7 @@ io.on('connection', (socket) => {
     console.log('CreateMessage', message);
     //io.emit broadcast message including the emitter
     io.emit('newMessage',generateMessage(message.from,message.text));
-    callback('Sent ack from server'); //Send the acknowlegement
+    callback(); //Send the acknowlegement
     // io.broadcast.emit('newMessage',{ //io.emit broadcast message but exclude the emitter
     //   from: message.from,
     //   text: message.text,
