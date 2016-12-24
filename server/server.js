@@ -24,10 +24,11 @@ io.on('connection', (socket) => {
   socket.emit('newMessage', generateMessage('Admin','Welcome to the chat app'));
   socket.broadcast.emit('newMessage', generateMessage('Admin','New user joined'));
 
-  socket.on('createMessage', (message) => {
+  socket.on('createMessage', (message, callback) => {
     console.log('CreateMessage', message);
     //io.emit broadcast message including the emitter
     io.emit('newMessage',generateMessage(message.from,message.text));
+    callback('Sent ack from server'); //Send the acknowlegement
     // io.broadcast.emit('newMessage',{ //io.emit broadcast message but exclude the emitter
     //   from: message.from,
     //   text: message.text,
