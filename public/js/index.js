@@ -15,14 +15,16 @@ socket.on('disconnect', function () { //disconnect is a standards event
 
 socket.on('newMessage', function (message) { //newMessage is a custom event
   console.log('New message', message);
+  var formattedTime = moment(message.createdAt).format('h:mm a');
   var li = jQuery('<li></li>');
-  li.text(`${message.from}: ${message.text}`);
+  li.text(`${message.from} ${formattedTime}: ${message.text}`);
   jQuery('#messages').append(li);
 })
 
 socket.on('newLocationMessage', function(message){
+  var formattedTime = moment(message.createdAt).format('h:mm a');
   var li = jQuery('<li></li>');
-  li.text(`${message.from}`);
+  li.text(`${message.from} ${formattedTime}: `);
   var a = jQuery(`<a></a>`);
   a.text('My current location');
   a.attr('target','_blank');
