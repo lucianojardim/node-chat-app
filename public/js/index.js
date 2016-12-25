@@ -1,12 +1,23 @@
 var socket = io();
 
+function scrollToBottom() { //call this function every time a new message is added to the screen
+  //Selectors //From jQuery (DOM)
+  var messages = jQuery('#messages');
+  var newMessage = messages.children('li:last-child');
+  //Heights //From jQuery (DOM)
+  var clientHeight = messages.prop('clientHeight');
+  var scrollTop = messages.prop('scrollTop'); 
+  var scrollHeight = messages.prop('scrollHeight');
+  var newMessageHeight = newMessage.innerHeight();
+  var lastMessageHeight = newMessage.prev().innerHeight();
+
+  if (clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight) {
+    messages.scrollTop(scrollHeight);
+  }
+}
+
 socket.on('connect', function () { //connect is a standard event
   console.log('Connected to server');
-
-  // socket.emit('createMessage', {
-  //   from: 'viviane@example.com',
-  //   text: 'Message from client.'
-  // })
 });
 
 socket.on('disconnect', function () { //disconnect is a standards event
@@ -23,6 +34,7 @@ socket.on('newMessage', function (message) { //newMessage is a custom event
   });
 
   jQuery('#messages').append(html);
+  scrollToBottom();
 
   // var formattedTime = moment(message.createdAt).format('h:mm a');
   // var li = jQuery('<li></li>');
@@ -40,6 +52,7 @@ socket.on('newLocationMessage', function(message){
   });
 
   jQuery('#messages').append(html);
+  scrollToBottom();
 
   // var li = jQuery('<li></li>');
   // li.text(`${message.from} ${formattedTime}: `);
@@ -52,7 +65,7 @@ socket.on('newLocationMessage', function(message){
 });
 
 jQuery('#message-form').on('submit', function(e) {
-  e.preventDefault();
+  e.preventDefault(); // prevent default of reloading the page and create a variable in the URL for the form variable
 
   var messageTextBox = jQuery('[name=message]');
   socket.emit('createMessage', { //createMessage is a custom event
