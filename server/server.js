@@ -43,20 +43,28 @@ io.on('connection', (socket) => {
   });
 
   socket.on('createMessage', (message, callback) => {
-    console.log('CreateMessage', message);
-    // send message to all users
-    io.emit('newMessage',generateMessage(message.from,message.text));
+    var user = users.getUser(socket.id);
+    if(user && isRealString(message.text)){
+      console.log('CreateMessage', message);
+      // send message to all users in the same room
+      io.to(user.room).emit('newMessage',generateMessage(user.name,message.text));
+    }
+
     callback(); //Send the acknowlegement
     // io.broadcast.emit('newMessage',{ //io.emit broadcast message but exclude the emitter
     //   from: message.from,
     //   text: message.text,
     //   createdAt: new Date().getTime()
     // });
-  });
+    });
 
   socket.on('createLocationMessage', (coords) => {
-    // send message to all users
-    io.emit('newLocationMessage', generateLocationMessage('Admin',coords.latitude, coords.longitude));
+    var user = users.getUser(socket.id);
+    if(user){
+      console.log('CreateLocationMessage', coords);
+      // send message to all users
+      io.to(user.room).emit('newLocationMessage', generateLocationMessage(user.name,coords.latitude, coords.longitude));
+    }
   });
 
   socket.on('disconnect', () => {
